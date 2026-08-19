@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yo 的顧問生涯小成發 — 老闆們如何用 AI 降本增效？</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--ink:#1a1a1a;--paper:#f5f2ed;--paper-warm:#f0ebe3;--accent:#c4442a;--accent-soft:#e8d5c4;--muted:#6f6a63}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans TC',sans-serif;background:var(--paper);-webkit-font-smoothing:antialiased}
+.deck{width:100vw;height:100vh;position:relative}
+.slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .5s ease,visibility 0s .5s;background:var(--paper);padding:0 8%;text-align:center}
+.slide.active{opacity:1;visibility:visible;transition:opacity .5s ease}
+.slide-counter{position:fixed;bottom:18px;right:24px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#c8c2b8;z-index:10}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.3vw,16px);letter-spacing:.18em;color:var(--accent);margin-bottom:28px;text-transform:uppercase}
+.headline{font-size:clamp(30px,4.6vw,64px);font-weight:900;color:var(--ink);letter-spacing:-.02em;line-height:1.35}
+.headline .accent{color:var(--accent)}
+.subline{margin-top:22px;font-size:clamp(15px,1.9vw,24px);font-weight:400;color:var(--muted);line-height:1.7}
+.slide.warm{background:var(--paper-warm)}
+.fade-up{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.slide.active .fade-up{opacity:1;transform:translateY(0)}
+.fade-up-d1{transition-delay:.15s}.fade-up-d2{transition-delay:.3s}.fade-up-d3{transition-delay:.45s}
+.step{opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease}
+.step.revealed{opacity:1;transform:translateY(0)}
+.list{margin-top:36px;display:flex;flex-direction:column;gap:16px;max-width:820px;width:100%}
+.card{background:#fff;border:1px solid #e3dcd0;border-radius:12px;padding:clamp(16px,2vw,26px);box-shadow:0 4px 20px rgba(0,0,0,.06);text-align:left;display:flex;gap:16px;align-items:flex-start}
+.card .n{font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700;font-size:clamp(15px,1.6vw,20px);flex-shrink:0}
+.card p{font-size:clamp(15px,1.7vw,21px);line-height:1.6;color:var(--ink)}
+.card p b{color:var(--accent)}
+.quote{margin-top:34px;max-width:840px;background:#fff;border-left:6px solid var(--accent);border-radius:8px;padding:clamp(20px,2.6vw,34px);text-align:left;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+.quote p{font-size:clamp(16px,2vw,25px);line-height:1.9;color:var(--ink);font-weight:500}
+.placeholder{margin-top:30px;border:2px dashed var(--muted);border-radius:12px;padding:clamp(28px,4vw,60px);color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:clamp(14px,1.6vw,18px);max-width:760px;width:100%}
+.tagcloud{margin-top:34px;max-width:820px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.tag{font-family:'JetBrains Mono',monospace;font-size:clamp(12px,1.3vw,16px);color:#57524b;border:1px solid #b8b0a3;border-radius:999px;padding:6px 14px}
+.fourgrid{margin-top:38px;display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:760px;width:100%}
+.fourgrid .card{justify-content:center;align-items:center;text-align:center}
+.fourgrid .card p{font-size:clamp(17px,2vw,24px);font-weight:700}
+.chain{margin-top:38px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;max-width:900px}
+.chain .c-item{background:#fff;border-radius:10px;padding:clamp(12px,1.6vw,20px) clamp(16px,2vw,26px);font-size:clamp(15px,1.8vw,22px);font-weight:700;color:var(--ink);box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.chain .c-arrow{color:var(--accent);font-weight:900;font-size:clamp(16px,2vw,26px)}
+.qgrid{margin-top:34px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:880px;width:100%}
+.qgrid .card{justify-content:center;text-align:center}
+.qgrid .card p{font-weight:700;font-size:clamp(17px,2.3vw,30px);width:100%;text-align:center}
+.card .badge{margin-left:10px;color:var(--accent);font-weight:900;font-size:clamp(16px,2vw,24px)}
+.card:has(.badge.revealed){outline:3px solid var(--accent)}
+.card:has(.badge.revealed) p{color:var(--accent)}
+.wish{font-size:clamp(22px,3.2vw,42px);font-weight:900;color:var(--ink);line-height:1.4;margin-top:20px}
+.agenda-sub{display:block;font-size:.78em;color:var(--muted);font-weight:400;margin-top:4px}
+.imgfull{padding:0}
+.imgfull img{width:100vw;height:100vh;object-fit:contain}
+.fbshot{position:absolute;max-width:26vw;max-height:42vh;box-shadow:0 12px 34px rgba(0,0,0,.28);border-radius:8px;border:1px solid #e3dcd0}
+.fb1{top:6%;left:4%;transform:rotate(-5deg)}
+.fb2{top:8%;right:5%;transform:rotate(4deg)}
+.fb3{bottom:7%;left:6%;transform:rotate(3deg)}
+.fb4{bottom:6%;right:4%;transform:rotate(-4deg)}
+.fb5{top:30%;left:22%;transform:rotate(2deg)}
+.fb6{top:28%;right:20%;transform:rotate(-3deg)}
+.fbshot.step{opacity:0;transform:scale(.9)}
+.fbshot.step.revealed{opacity:1}
+.fbshot.step.revealed.fb1{transform:rotate(-5deg)}
+.fbshot.step.revealed.fb2{transform:rotate(4deg)}
+.fbshot.step.revealed.fb3{transform:rotate(3deg)}
+.fbshot.step.revealed.fb4{transform:rotate(-4deg)}
+.fbshot.step.revealed.fb5{transform:rotate(2deg)}
+.fbshot.step.revealed.fb6{transform:rotate(-3deg)}
+/* edit mode */
+#editToggle{display:none;position:fixed;bottom:16px;left:20px;z-index:20;font-family:'JetBrains Mono',monospace;font-size:12px;color:#777;background:rgba(255,255,255,.6);border:1px solid #ccc;border-radius:999px;padding:6px 14px;cursor:pointer;backdrop-filter:blur(4px)}
+#editToggle.on{color:#fff;background:var(--accent);border-color:var(--accent)}
+#commentBar{position:fixed;left:0;right:0;bottom:0;z-index:15;background:rgba(26,26,26,.96);padding:12px 16px 14px;display:none;flex-direction:column;gap:6px;box-shadow:0 -6px 24px rgba(0,0,0,.3)}
+#commentBar.show{display:flex}
+#commentBar .cb-label{font-family:'JetBrains Mono',monospace;font-size:12px;color:#aaa;display:flex;justify-content:space-between}
+#commentBar textarea{width:100%;min-height:64px;resize:vertical;background:#26241f;color:#f5f2ed;border:1px solid #444;border-radius:8px;padding:10px 12px;font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.6}
+#commentBar textarea:focus{outline:none;border-color:var(--accent)}
+.has-comment-dot{color:var(--accent)!important}
+</style>
+</head>
+<body>
+<div class="deck">
+
+<!-- 0 標題（評論 0：用宣傳標題、去自我介紹行） -->
+<section class="slide warm active">
+  <div class="eyebrow fade-up">扶輪例會 · 2026-08-19</div>
+  <h1 class="headline fade-up fade-up-d1">Yo 的顧問生涯<span class="accent">小成發</span></h1>
+  <p class="subline fade-up fade-up-d2">老闆們如何用 AI 降本增效？——AI agent 商務應用 case studies</p>
+</section>
+
+<!-- 1 Agenda（評論 2） -->
+<section class="slide">
+  <div class="eyebrow fade-up">今天講什麼</div>
+  <div class="list">
+    <div class="card fade-up"><span class="n">01</span><p>我從哪裡來？我的專業是什麼</p></div>
+    <div class="card fade-up fade-up-d1"><span class="n">02</span><p>故事時間<span class="agenda-sub">顧問換保單 → 補習班 → 自己的產品 → 朋友的顧問公司 → 終於決定轉型</span></p></div>
+    <div class="card fade-up fade-up-d2"><span class="n">03</span><p>實戰演練——讓 AI 處理放貸評估</p></div>
+    <div class="card fade-up fade-up-d3"><span class="n">04</span><p>什麼樣的事情適合交給 AI？</p></div>
+    <div class="card fade-up fade-up-d3"><span class="n">05</span><p>我現在怎麼接案</p></div>
+  </div>
+</section>
+
+<!-- 2 軟體新創教了我什麼（評論 3：不說教，四格圖） -->
+<section class="slide">
+  <div class="eyebrow fade-up">01 我從哪裡來</div>
+  <h1 class="headline fade-up fade-up-d1">軟體新創十幾年，教了我什麼</h1>
+  <div class="fourgrid">
+    <div class="card step"><p>行銷</p></div>
+    <div class="card step"><p>經營策略</p></div>
+    <div class="card step"><p>使用者研究</p></div>
+    <div class="card step"><p>軟體開發<span class="badge step">★</span></p></div>
+  </div>
+</section>
+
+<!-- 3 三件事（評論 4/5：改句） -->
+<section class="slide warm">
+  <h1 class="headline fade-up">老闆拍腦袋想做 A 功能時，<br>我們做三件事：</h1>
+  <div class="list">
+    <div class="card step"><span class="n">01</span><p>用更少的錢跟時間，驗證它是不是真的值得做</p></div>
+    <div class="card step"><span class="n">02</span><p>評估實作的成本</p></div>
+    <div class="card step"><span class="n">03</span><p>看看同時間，有沒有更划算的事</p></div>
+  </div>
+</section>
+
+<!-- 4 該做→怎麼做 -->
+<section class="slide">
+  <h1 class="headline fade-up">確定「該做」，才談「怎麼做」。</h1>
+  <p class="subline fade-up fade-up-d1">效率：多快做出來 ｜ 穩定：做出來多可靠</p>
+  <div class="tagcloud fade-up fade-up-d2">
+    <span class="tag">模組化</span><span class="tag">CI/CD</span><span class="tag">DevSecOps</span><span class="tag">測試</span><span class="tag">QA</span><span class="tag">文件</span><span class="tag">issue 管理</span><span class="tag">教育訓練</span><span class="tag">開發者體驗</span>
+  </div>
+</section>
+
+<!-- 5 章節頁（評論 5） -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">第二章</div>
+  <h1 class="headline fade-up fade-up-d1">故事時間</h1>
+</section>
+
+<!-- 6 第一單 -->
+<section class="slide">
+  <div class="eyebrow fade-up">故事一 · 顧問換保單</div>
+  <h1 class="headline fade-up fade-up-d1">我保險成交的第一單，<br>是靠 <span class="accent">AI 顧問</span>換來的。</h1>
+</section>
+
+<!-- 7 運動顧問同學 -->
+<section class="slide">
+  <div class="eyebrow fade-up">在運動顧問公司工作的高中同學</div>
+  <div class="list">
+    <div class="card step"><span class="n">痛 1</span><p>場館營運、教練排班</p></div>
+    <div class="card step"><span class="n">痛 2</span><p>回覆客戶詢問時，資料查詢困難</p></div>
+  </div>
+</section>
+
+<!-- 8 我的模式 -->
+<section class="slide warm">
+  <h1 class="headline fade-up">我的模式：</h1>
+  <p class="subline fade-up fade-up-d1" style="font-size:clamp(17px,2.2vw,28px)">給思路、給方向、示範關鍵流程。<br>目標是他離開我之後，<b style="color:var(--accent)">自己也能動手。</b></p>
+</section>
+
+<!-- 8.5 成果展示（評論 9：新增） -->
+<section class="slide">
+  <div class="eyebrow fade-up">故事一 · 成果</div>
+  <div class="list">
+    <div class="card step"><span class="n">✓</span><p>排班問題——有了自己做的整理工具</p></div>
+    <div class="card step"><span class="n">✓</span><p>客戶詢問——資料查詢流程做起來了</p></div>
+  </div>
+  <div class="placeholder fade-up fade-up-d2">［成果截圖 · 佔位（有素材丟給多比）］</div>
+</section>
+
+<!-- 9 成交小保單 -->
+<section class="slide">
+  <h1 class="headline fade-up">然後我成交了——</h1>
+  <p class="headline step" style="margin-top:14px">一張金額很小的<span class="accent">定期健康險</span>。</p>
+</section>
+
+<!-- 10 故事二章名（評論 10） -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">故事二</div>
+  <h1 class="headline fade-up fade-up-d1">圓補習班老闆的夢</h1>
+</section>
+
+<!-- 11 補習班許願大會（評論 11：三行直給） -->
+<section class="slide">
+  <div class="eyebrow fade-up">故事二 · 補習班老闆</div>
+  <p class="wish step">把學習變成 RPG 遊戲？</p>
+  <p class="wish step">門口放任務布告欄？</p>
+  <p class="wish step">個性化的學生讀書小幫手？</p>
+</section>
+
+<!-- 12 引文全文（評論 17：不用黑底） -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">我每次都問的問題</div>
+  <div class="qgrid">
+    <div class="card step"><p>為了解決什麼問題？</p></div>
+    <div class="card step"><p>有什麼假設？</p></div>
+    <div class="card step"><p>有沒有更便宜、更快的方式？</p></div>
+    <div class="card step"><p>有沒有最小可行的實驗版本？</p></div>
+    <div class="card step"><p>現在最重要的是這個嗎？</p></div>
+    <div class="card step"><p>如果重要，是什麼我們還沒開始？</p></div>
+  </div>
+</section>
+
+<!-- 13 收斂（評論 14：改句） -->
+<section class="slide">
+  <h1 class="headline fade-up">幾次諮詢之後，<br>我們知道<span class="accent">什麼最值得先做</span>：</h1>
+  <p class="subline fade-up fade-up-d1" style="font-size:clamp(17px,2.2vw,28px)">先做<b>點名系統</b>——行政老師一週省下 5–6 小時，<br>老闆的計畫才有人手跟時間往下走。</p>
+</section>
+
+<!-- 14 引文重放（評論 15） -->
+<section class="slide warm">
+  <h1 class="headline fade-up" style="font-size:clamp(24px,3.2vw,44px)">他付錢買的，是這套提問</h1>
+  <div class="qgrid fade-up fade-up-d1" style="opacity:.75;transform:scale(.92)">
+    <div class="card"><p>為了解決什麼問題？</p></div>
+    <div class="card"><p>有什麼假設？</p></div>
+    <div class="card"><p>有沒有更便宜、更快的方式？</p></div>
+    <div class="card"><p>有沒有最小可行的實驗版本？</p></div>
+    <div class="card"><p>現在最重要的是這個嗎？</p></div>
+    <div class="card"><p>如果重要，是什麼我們還沒開始？</p></div>
+  </div>
+</section>
+
+<!-- 15 成交了嗎（評論 16：刪 subline） -->
+<section class="slide">
+  <h1 class="headline fade-up">那，他跟我成交保險了嗎？</h1>
+  <p class="headline step" style="margin-top:20px;color:var(--accent)">沒有。</p>
+</section>
+
+<!-- 16 產品夢（評論 17：不用黑底） -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">故事三 · 自己的產品</div>
+  <h1 class="headline fade-up fade-up-d1">自動化保單健檢。</h1>
+  <p class="subline fade-up fade-up-d2">一個月收 200，一千個人用 ＝ 月入二十萬。<br>今年一月，我一頭栽進去。</p>
+</section>
+
+<!-- 17 三個月現實（評論 18：補邊開發邊寫心得） -->
+<section class="slide">
+  <h1 class="headline fade-up">三個月後的現實：</h1>
+  <p class="subline fade-up fade-up-d1" style="font-size:clamp(17px,2.2vw,28px)">表現不夠好、問題解不完、很難賣。<br>但我從頭到尾<b style="color:var(--accent)">邊開發邊公開寫心得</b>——後面的案子都是這樣來的。</p>
+</section>
+
+<!-- 18 朋友的顧問公司 起點 -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">故事四 · 朋友的顧問公司</div>
+  <h1 class="headline fade-up fade-up-d1">一直公開分享的結果——</h1>
+  <p class="subline fade-up fade-up-d2">好前輩請我去他們公司的週年活動演講。</p>
+  <img class="fbshot fb1 step" src="images/fb/fb-1.png" alt="FB 貼文">
+  <img class="fbshot fb2 step" src="images/fb/fb-2.png" alt="FB 貼文">
+  <img class="fbshot fb3 step" src="images/fb/fb-3.png" alt="FB 貼文">
+  <img class="fbshot fb4 step" src="images/fb/fb-4.png" alt="FB 貼文">
+  <img class="fbshot fb5 step" src="images/fb/fb-5.png" alt="FB 貼文">
+  <img class="fbshot fb6 step" src="images/fb/fb-6.png" alt="FB 貼文">
+</section>
+
+<!-- 19 演講目標 -->
+<section class="slide">
+  <h1 class="headline fade-up">那場演講的目標：</h1>
+  <p class="subline fade-up fade-up-d1" style="font-size:clamp(17px,2.2vw,28px)">讓獵頭顧問們知道——<b>AI 時代的工作，已經很不一樣了。</b></p>
+</section>
+
+<!-- 20 朋友 B 請我做兩件事（評論 22：補兩點） -->
+<section class="slide warm">
+  <h1 class="headline fade-up">後來 朋友 B 請我當顧問，兩週一次，<br>做兩件事：</h1>
+  <div class="list">
+    <div class="card step"><span class="n">01</span><p>協助公司內部的專案（有保密協定，不能說太多）</p></div>
+    <div class="card step"><span class="n">02</span><p>公司走向 AI native 的過程裡，提供軟體與 AI 應用的知識跟意見</p></div>
+  </div>
+</section>
+
+<!-- 21 朋友 B 原話 -->
+<section class="slide">
+  <h1 class="headline fade-up">朋友 B 跟我說：</h1>
+  <div class="quote fade-up fade-up-d1">
+    <p>「你就繼續做你現在在做的事：研究 AI、動手落地，<br>在 session 裡給我足夠的挑戰、新觀點、落地知識。」</p>
+  </div>
+</section>
+
+<!-- 22 引文再放（評論 22：slide 14 重放） -->
+<section class="slide warm">
+  <h1 class="headline fade-up" style="font-size:clamp(24px,3.2vw,44px)">他買的，還是這套提問</h1>
+  <div class="qgrid fade-up fade-up-d1" style="opacity:.75;transform:scale(.92)">
+    <div class="card"><p>為了解決什麼問題？</p></div>
+    <div class="card"><p>有什麼假設？</p></div>
+    <div class="card"><p>有沒有更便宜、更快的方式？</p></div>
+    <div class="card"><p>有沒有最小可行的實驗版本？</p></div>
+    <div class="card"><p>現在最重要的是這個嗎？</p></div>
+    <div class="card"><p>如果重要，是什麼我們還沒開始？</p></div>
+  </div>
+</section>
+
+<!-- 23 轉型（評論 23：改章名、意志力→腦力） -->
+<section class="slide">
+  <div class="eyebrow fade-up">故事五 · 現在呢？</div>
+  <h1 class="headline fade-up fade-up-d1">軟體＋保險，兩邊顧不好。</h1>
+  <p class="subline fade-up fade-up-d2">體力不允許、腦力不夠用，家庭不能放。</p>
+</section>
+
+<!-- 24 最重一問 -->
+<section class="slide warm">
+  <h1 class="headline fade-up">一天只有很少工作時間的人，<br>該做什麼，才有<span class="accent">最大的槓桿</span>？</h1>
+</section>
+
+<!-- 25 為什麼不是保險/SaaS（評論 23 補敘事） -->
+<section class="slide">
+  <h1 class="headline fade-up">為什麼不繼續衝保險？<br>為什麼不繼續做 SaaS？</h1>
+  <p class="subline fade-up fade-up-d1">因為我慢慢發現，我要的不是做一家新創——我要的是一種方式：</p>
+  <div class="chain">
+    <span class="c-item step">貢獻價值</span><span class="c-arrow">→</span>
+    <span class="c-item step">賺到錢</span><span class="c-arrow">→</span>
+    <span class="c-item step">看到市場的問題</span><span class="c-arrow">→</span>
+    <span class="c-item step">規模化解決更大量的問題</span>
+  </div>
+</section>
+
+<!-- 26 收入結構圖 -->
+<section class="slide imgfull">
+  <img src="images/income-pyramid.png" alt="收入結構金字塔">
+</section>
+
+<!-- 27 明年六月目標 -->
+<section class="slide">
+  <img class="fade-up" src="images/target.png" alt="到明年六月的目標" style="max-height:70vh;max-width:94%">
+  <p class="step" style="margin-top:12px;color:var(--ink);font-weight:700;font-size:clamp(18px,2.4vw,30px)">顧問養自己 → 多出來的時間養產品、養品牌 → <span style="color:var(--accent)">反過來養顧問</span>。</p>
+</section>
+
+<!-- 28 放貸案例 -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">03 我怎麼做顧問</div>
+  <h1 class="headline fade-up fade-up-d1">以放貸案件評估為例。</h1>
+  <p class="subline fade-up fade-up-d2">做融資的高中同學：怎麼加速放款評估流程。</p>
+</section>
+
+<!-- 29 放貸 skill 樹狀圖（先三大步、點一下出全圖） -->
+<section class="slide">
+  <h1 class="headline fade-up" style="font-size:clamp(24px,3.4vw,46px)">一個「放貸評估」skill，會自己做完這些事</h1>
+  <div class="chain fade-up fade-up-d1">
+    <span class="c-item">確認文件完善</span><span class="c-arrow">→</span>
+    <span class="c-item">分析不動產市值</span><span class="c-arrow">→</span>
+    <span class="c-item">判斷承做條件</span>
+  </div>
+  <img class="step" src="images/loan-skill-tree.png" alt="放貸評估 skill 樹狀圖" style="max-height:56vh;max-width:92%;margin-top:16px">
+  <p class="step" style="margin-top:12px;color:var(--accent);font-weight:900;font-size:clamp(18px,2.4vw,30px)">一個指令，整串一口氣跑完。</p>
+</section>
+
+<!-- 29b 填空遊戲 -->
+<section class="slide imgfull">
+  <img src="images/skill-fill.png" alt="skill 是填空遊戲">
+</section>
+
+<!-- 29c 評估集 -->
+<section class="slide">
+  <img class="fade-up" src="images/eval-set.png" alt="評估集" style="max-height:72vh;max-width:94%">
+  <p class="step" style="margin-top:10px;color:var(--accent);font-weight:900;font-size:clamp(19px,2.6vw,32px)">AI 不是用信任上線的，是用考試上線的。</p>
+</section>
+
+<!-- 30 對話框 vs agent -->
+<section class="slide warm">
+  <h1 class="headline fade-up">大部分人的 AI 用法，<br>停在<span class="accent">對話框</span>。</h1>
+  <p class="subline fade-up fade-up-d1">讓它安全地動手——產生檔案、編輯檔案、操作瀏覽器——是另一門功夫。</p>
+</section>
+
+<!-- 31 小結 4-1（評論 2：兩大類重定義） -->
+<section class="slide">
+  <div class="eyebrow fade-up">04 小結 · AI 適合做哪些事？</div>
+  <div class="list">
+    <div class="card step"><span class="n">01</span><p><b>讓數位轉型的成本變得可負擔</b>——補習班的例子</p></div>
+    <div class="card step"><span class="n">02</span><p><b>模糊的輸入輸出，可以規模化</b>——放貸案件評估的例子</p></div>
+  </div>
+</section>
+
+<!-- 32 小結 4-2 怎麼接案（評論 31：03 講 agbuddy；評論 2：報價） -->
+<section class="slide warm">
+  <div class="eyebrow fade-up">04 小結 · 我現在怎麼接案</div>
+  <div class="list">
+    <div class="card step"><span class="n">01</span><p>AI 顧問——幫你找到 AI 加速工作流程、產生新價值的地方</p></div>
+    <div class="card step"><span class="n">02</span><p>AI 家教——真的想動手？我把方法論教給你</p></div>
+    <div class="card step"><span class="n">03</span><p>Agent 環境——我做的 <b>agbuddy</b>，給你一個可以直接用的 AI 員工環境</p></div>
+  </div>
+  <p class="step" style="margin-top:26px;color:var(--ink);font-weight:700;font-size:clamp(18px,2.4vw,30px)">初步諮詢 3,000／小時 ｜ 長期合作，細節另談。</p>
+</section>
+
+</div>
+<div class="slide-counter" id="counter">1 / 33</div>
+<button id="editToggle">✏ 評論模式</button>
+<div id="commentBar">
+  <div class="cb-label"><span id="cbSlide">slide 1</span><span id="cbStatus"></span></div>
+  <textarea id="cbText" placeholder="這一頁哪裡要改？寫完自動存，多比會來讀。"></textarea>
+</div>
+<script>
+(function(){
+  const slides=[...document.querySelectorAll('.slide')];
+  const counter=document.getElementById('counter');
+  let cur=0;
+  let comments={},editing=false,saveTimer=null;
+  const bar=document.getElementById('commentBar'),txt=document.getElementById('cbText'),
+        cbSlide=document.getElementById('cbSlide'),cbStatus=document.getElementById('cbStatus'),
+        toggle=document.getElementById('editToggle');
+  fetch('/api/comments').then(r=>r.json()).then(d=>{comments=d;paintCounter();}).catch(()=>{});
+  function paintCounter(){
+    counter.textContent=(cur+1)+' / '+slides.length+(comments[cur]?' ●':'');
+    counter.classList.toggle('has-comment-dot',!!comments[cur]);
+  }
+  function loadComment(){cbSlide.textContent='slide '+(cur+1);txt.value=comments[cur]||'';cbStatus.textContent='';}
+  function saveComment(){
+    const text=txt.value;
+    if(text.trim())comments[cur]=text;else delete comments[cur];
+    paintCounter();cbStatus.textContent='存檔中…';
+    fetch('/api/comments',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({idx:cur,text})})
+      .then(r=>r.json()).then(()=>{cbStatus.textContent='已存 ✓';})
+      .catch(()=>{cbStatus.textContent='存檔失敗，網路？';});
+  }
+  txt.addEventListener('input',()=>{clearTimeout(saveTimer);cbStatus.textContent='…';saveTimer=setTimeout(saveComment,600);});
+  toggle.addEventListener('click',e=>{e.stopPropagation();editing=!editing;toggle.classList.toggle('on',editing);bar.classList.toggle('show',editing);if(editing)loadComment();});
+  bar.addEventListener('click',e=>e.stopPropagation());
+  bar.addEventListener('touchend',e=>e.stopPropagation());
+  function show(i){slides[cur].classList.remove('active');cur=i;slides[cur].classList.add('active');paintCounter();if(editing)loadComment();}
+  function advance(){
+    const steps=[...slides[cur].querySelectorAll('.step:not(.revealed)')];
+    if(steps.length){steps[0].classList.add('revealed');return;}
+    if(cur<slides.length-1)show(cur+1);
+  }
+  function retreat(){
+    const revealed=[...slides[cur].querySelectorAll('.step.revealed')];
+    if(revealed.length){revealed[revealed.length-1].classList.remove('revealed');return;}
+    if(cur>0)show(cur-1);
+  }
+  document.addEventListener('keydown',e=>{
+    if(e.target===txt)return;
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' '){e.preventDefault();advance();}
+    else if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();retreat();}
+    else if(e.key==='Home'){show(0);}
+    else if(e.key==='End'){show(slides.length-1);}
+  });
+  let tx=0,touch=false;
+  document.addEventListener('touchstart',e=>{touch=true;tx=e.changedTouches[0].clientX;},{passive:true});
+  document.addEventListener('touchend',e=>{if(e.target===txt||bar.contains(e.target)||e.target===toggle)return;const dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)<30){if(tx<innerWidth*.3)retreat();else advance();}else if(dx<-50)advance();else if(dx>50)retreat();},{passive:true});
+  document.addEventListener('click',e=>{if(touch){touch=false;return;}if(e.target===txt||bar.contains(e.target)||e.target===toggle)return;const x=e.clientX;if(x<innerWidth*.3)retreat();else advance();});
+})();
+</script>
+</body>
+</html>
